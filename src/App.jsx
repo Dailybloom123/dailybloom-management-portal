@@ -371,6 +371,7 @@ function AdminDashboard({ user, onLogout }) {
         <button onClick={() => setActiveTab('orders')} style={{ padding: '8px 16px', background: activeTab === 'orders' ? '#333' : '#f5f5f5', color: activeTab === 'orders' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Orders</button>
         <button onClick={() => setActiveTab('stats')} style={{ padding: '8px 16px', background: activeTab === 'stats' ? '#333' : '#f5f5f5', color: activeTab === 'stats' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Statistics</button>
         <button onClick={() => setActiveTab('partners')} style={{ padding: '8px 16px', background: activeTab === 'partners' ? '#333' : '#f5f5f5', color: activeTab === 'partners' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Partners</button>
+        <button onClick={() => setActiveTab('complaints')} style={{ padding: '8px 16px', background: activeTab === 'complaints' ? '#333' : '#f5f5f5', color: activeTab === 'complaints' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Complaints</button>
         <button onClick={() => setActiveTab('staging')} style={{ padding: '8px 16px', background: activeTab === 'staging' ? '#333' : '#f5f5f5', color: activeTab === 'staging' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Staging Queue</button>
       </div>
 
@@ -408,30 +409,91 @@ function AdminDashboard({ user, onLogout }) {
       {/* Statistics Tab */}
       {activeTab === 'stats' && (
         <div style={{ background: 'white', borderRadius: 8, padding: 20 }}>
-          <h2 style={{ marginBottom: 16 }}>Statistics</h2>
+          <h2 style={{ marginBottom: 16 }}>Analytics Dashboard</h2>
           {loading ? (
             <div>Loading statistics...</div>
           ) : stats ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-              <div style={{ padding: 16, background: '#f5f5f5', borderRadius: 6 }}>
-                <div style={{ fontSize: 12, color: '#666' }}>Today's Orders</div>
-                <div style={{ fontSize: 24, fontWeight: 700 }}>{stats.todayOrders || 0}</div>
+            <div>
+              {/* Key Metrics */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+                <div style={{ padding: 16, background: '#f5f5f5', borderRadius: 6 }}>
+                  <div style={{ fontSize: 12, color: '#666' }}>Today's Orders</div>
+                  <div style={{ fontSize: 24, fontWeight: 700 }}>{stats.todayOrders || 0}</div>
+                </div>
+                <div style={{ padding: 16, background: '#f5f5f5', borderRadius: 6 }}>
+                  <div style={{ fontSize: 12, color: '#666' }}>Today's Revenue</div>
+                  <div style={{ fontSize: 24, fontWeight: 700 }}>₹{stats.todayRevenue || 0}</div>
+                </div>
+                <div style={{ padding: 16, background: '#f5f5f5', borderRadius: 6 }}>
+                  <div style={{ fontSize: 12, color: '#666' }}>Pending Orders</div>
+                  <div style={{ fontSize: 24, fontWeight: 700 }}>{stats.pendingOrders || 0}</div>
+                </div>
+                <div style={{ padding: 16, background: '#f5f5f5', borderRadius: 6 }}>
+                  <div style={{ fontSize: 12, color: '#666' }}>Total Customers</div>
+                  <div style={{ fontSize: 24, fontWeight: 700 }}>{stats.totalCustomers || 0}</div>
+                </div>
+                <div style={{ padding: 16, background: '#f5f5f5', borderRadius: 6 }}>
+                  <div style={{ fontSize: 12, color: '#666' }}>Total Partners</div>
+                  <div style={{ fontSize: 24, fontWeight: 700 }}>{stats.totalPartners || 0}</div>
+                </div>
               </div>
-              <div style={{ padding: 16, background: '#f5f5f5', borderRadius: 6 }}>
-                <div style={{ fontSize: 12, color: '#666' }}>Today's Revenue</div>
-                <div style={{ fontSize: 24, fontWeight: 700 }}>₹{stats.todayRevenue || 0}</div>
-              </div>
-              <div style={{ padding: 16, background: '#f5f5f5', borderRadius: 6 }}>
-                <div style={{ fontSize: 12, color: '#666' }}>Pending Orders</div>
-                <div style={{ fontSize: 24, fontWeight: 700 }}>{stats.pendingOrders || 0}</div>
-              </div>
-              <div style={{ padding: 16, background: '#f5f5f5', borderRadius: 6 }}>
-                <div style={{ fontSize: 12, color: '#666' }}>Total Customers</div>
-                <div style={{ fontSize: 24, fontWeight: 700 }}>{stats.totalCustomers || 0}</div>
-              </div>
-              <div style={{ padding: 16, background: '#f5f5f5', borderRadius: 6 }}>
-                <div style={{ fontSize: 12, color: '#666' }}>Total Partners</div>
-                <div style={{ fontSize: 24, fontWeight: 700 }}>{stats.totalPartners || 0}</div>
+
+              {/* Additional Analytics */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
+                {/* Order Status Breakdown */}
+                <div style={{ padding: 16, border: '1px solid #eee', borderRadius: 6 }}>
+                  <h3 style={{ fontSize: 16, marginBottom: 12 }}>Order Status Breakdown</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Pending</span>
+                      <strong>{stats.pendingOrders || 0}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Confirmed</span>
+                      <strong>{stats.confirmedOrders || 0}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>In Progress</span>
+                      <strong>{stats.inProgressOrders || 0}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Delivered</span>
+                      <strong>{stats.deliveredOrders || 0}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Cancelled</span>
+                      <strong>{stats.cancelledOrders || 0}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Weekly Revenue */}
+                <div style={{ padding: 16, border: '1px solid #eee', borderRadius: 6 }}>
+                  <h3 style={{ fontSize: 16, marginBottom: 12 }}>Weekly Revenue</h3>
+                  <div style={{ fontSize: 32, fontWeight: 700, color: '#4CAF50' }}>
+                    ₹{stats.weeklyRevenue || 0}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
+                    Last 7 days
+                  </div>
+                </div>
+
+                {/* Top Products */}
+                <div style={{ padding: 16, border: '1px solid #eee', borderRadius: 6 }}>
+                  <h3 style={{ fontSize: 16, marginBottom: 12 }}>Top Products</h3>
+                  {stats.topProducts && stats.topProducts.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {stats.topProducts.slice(0, 5).map((product, index) => (
+                        <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>{product.name}</span>
+                          <strong>{product.orders} orders</strong>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div style={{ color: '#666', fontSize: 13 }}>No data available</div>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
@@ -501,6 +563,31 @@ function AdminDashboard({ user, onLogout }) {
               </code>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Complaints Tab */}
+      {activeTab === 'complaints' && (
+        <div style={{ background: 'white', borderRadius: 8, padding: 20 }}>
+          <h2 style={{ marginBottom: 16 }}>Complaint Management</h2>
+          {loading ? (
+            <div>Loading complaints...</div>
+          ) : (
+            <div style={{ color: '#666' }}>
+              <p>Complaint management will display customer complaints and disputes here.</p>
+              <p>Features to implement:</p>
+              <ul style={{ marginLeft: 20 }}>
+                <li>View all complaints with status</li>
+                <li>Escalate complaints to partners</li>
+                <li>Resolve complaints directly</li>
+                <li>Track complaint SLA (4-hour response time)</li>
+                <li>Partner warning system (3-strike rule)</li>
+              </ul>
+              <code style={{ background: '#f5f5f5', padding: '4px 8px', borderRadius: 4, fontSize: 12 }}>
+                GET /api/admin/complaints
+              </code>
+            </div>
+          )}
         </div>
       )}
 
