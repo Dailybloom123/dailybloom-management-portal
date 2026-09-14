@@ -189,11 +189,17 @@ function AdminDashboard({ user, onLogout }) {
   const [passwordSuccess, setPasswordSuccess] = useState('');
   const [stats, setStats] = useState(null);
   const [stagingOrders, setStagingOrders] = useState([]);
+  const [partners, setPartners] = useState([]);
+  const [editingPartner, setEditingPartner] = useState(null);
+  const [showPartnerDetails, setShowPartnerDetails] = useState(false);
+  const [complaints, setComplaints] = useState([]);
 
   useEffect(() => {
     if (activeTab === 'orders') fetchOrders();
     if (activeTab === 'stats') fetchStats();
     if (activeTab === 'staging') fetchStagingOrders();
+    if (activeTab === 'partners') fetchPartners();
+    if (activeTab === 'complaints') fetchComplaints();
   }, [activeTab]);
 
   const fetchOrders = async () => {
@@ -238,6 +244,100 @@ function AdminDashboard({ user, onLogout }) {
       console.error('Failed to fetch staging queue:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPartners = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/admin/partners`, {
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      const data = await res.json();
+      if (res.ok) setPartners(data);
+    } catch (err) {
+      console.error('Failed to fetch partners:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updatePartner = async (partnerId, partnerData) => {
+    try {
+      const res = await fetch(`${API_BASE}/admin/partners/${partnerId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        },
+        body: JSON.stringify(partnerData)
+      });
+      if (res.ok) {
+        fetchPartners();
+        setShowPartnerDetails(false);
+        setEditingPartner(null);
+      }
+    } catch (err) {
+      console.error('Failed to update partner:', err);
+    }
+  };
+
+  const deletePartner = async (partnerId) => {
+    if (!confirm('Are you sure you want to delete this partner?')) return;
+    
+    try {
+      const res = await fetch(`${API_BASE}/admin/partners/${partnerId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      if (res.ok) {
+        fetchPartners();
+      }
+    } catch (err) {
+      console.error('Failed to delete partner:', err);
+    }
+  };
+
+  const fetchComplaints = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/admin/complaints`, {
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      const data = await res.json();
+      if (res.ok) setComplaints(data);
+    } catch (err) {
+      console.error('Failed to fetch complaints:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const escalateComplaint = async (complaintId) => {
+    try {
+      const res = await fetch(`${API_BASE}/admin/complaints/${complaintId}/escalate`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      if (res.ok) {
+        fetchComplaints();
+      }
+    } catch (err) {
+      console.error('Failed to escalate complaint:', err);
+    }
+  };
+
+  const resolveComplaint = async (complaintId) => {
+    try {
+      const res = await fetch(`${API_BASE}/admin/complaints/${complaintId}/resolve`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      if (res.ok) {
+        fetchComplaints();
+      }
+    } catch (err) {
+      console.error('Failed to resolve complaint:', err);
     }
   };
 
@@ -548,6 +648,7 @@ function AdminDashboard({ user, onLogout }) {
                 <option value="bakery">Bakery</option>
                 <option value="organic_partner">Organic Partner</option>
               </select>
+              <input name="assigned_zone_id" placeholder="Zone ID (optional)" style={{ padding: 8, borderRadius: 4, border: '1px solid #ddd' }} />
               <input name="password" type="password" placeholder="Password" required style={{ padding: 8, borderRadius: 4, border: '1px solid #ddd' }} />
               <button type="submit" style={{ padding: '8px 16px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Add Partner</button>
             </form>
@@ -556,12 +657,77 @@ function AdminDashboard({ user, onLogout }) {
           {/* Partners List */}
           <div>
             <h3 style={{ marginBottom: 12 }}>Existing Partners</h3>
-            <div style={{ color: '#666' }}>
-              <p>Partner list will be displayed here. Use the API to manage partners:</p>
-              <code style={{ background: '#f5f5f5', padding: '4px 8px', borderRadius: 4, fontSize: 12 }}>
-                GET /api/admin/partners
-              </code>
-            </div>
+            {loading ? (
+              <div>Loading partners...</div>
+            ) : partners.length === 0 ? (
+              <div style={{ color: '#666' }}>No partners yet.</div>
+            ) : (
+              <div style={{ display: 'grid', gap: 12 }}>
+                {partners.map(partner => (
+                  <div key={partner.id} style={{ padding: 16, border: '1px solid #eee', borderRadius: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ fontWeight: 600 }}>{partner.name}</div>
+                      <div style={{ fontSize: 13, color: '#666' }}>{partner.email || partner.phone}</div>
+                      <div style={{ fontSize: 12, color: '#666' }}>Type: {partner.partner_type}</div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button onClick={() => { setEditingPartner(partner); setShowPartnerDetails(true); }} style={{ padding: '6px 12px', background: '#2196F3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>View/Edit</button>
+                      <button onClick={() => deletePartner(partner.id)} style={{ padding: '6px 12px', background: '#f44336', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Delete</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Partner Details Modal */}
+      {showPartnerDetails && editingPartner && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'white', borderRadius: 12, padding: 32, width: '100%', maxWidth: 500 }}>
+            <h2 style={{ marginBottom: 20 }}>Partner Details</h2>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              await updatePartner(editingPartner.id, {
+                name: formData.get('name'),
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                partner_type: formData.get('partner_type'),
+                assigned_zone_id: formData.get('assigned_zone_id') || null
+              });
+            }} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Name</label>
+                <input name="name" defaultValue={editingPartner.name} required style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Phone</label>
+                <input name="phone" defaultValue={editingPartner.phone} required style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Email</label>
+                <input name="email" defaultValue={editingPartner.email || ''} style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Partner Type</label>
+                <select name="partner_type" defaultValue={editingPartner.partner_type} required style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd' }}>
+                  <option value="milk_van">Milk Van</option>
+                  <option value="florist">Florist</option>
+                  <option value="bakery">Bakery</option>
+                  <option value="organic_partner">Organic Partner</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Assigned Zone</label>
+                <input name="assigned_zone_id" defaultValue={editingPartner.assigned_zone_id || ''} placeholder="Zone ID (optional)" style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd' }} />
+              </div>
+              <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                <button type="submit" style={{ flex: 1, padding: 12, background: '#333', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Update Partner</button>
+                <button type="button" onClick={() => { setShowPartnerDetails(false); setEditingPartner(null); }} style={{ flex: 1, padding: 12, background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Cancel</button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -572,20 +738,25 @@ function AdminDashboard({ user, onLogout }) {
           <h2 style={{ marginBottom: 16 }}>Complaint Management</h2>
           {loading ? (
             <div>Loading complaints...</div>
+          ) : complaints.length === 0 ? (
+            <div style={{ color: '#666' }}>No complaints yet.</div>
           ) : (
-            <div style={{ color: '#666' }}>
-              <p>Complaint management will display customer complaints and disputes here.</p>
-              <p>Features to implement:</p>
-              <ul style={{ marginLeft: 20 }}>
-                <li>View all complaints with status</li>
-                <li>Escalate complaints to partners</li>
-                <li>Resolve complaints directly</li>
-                <li>Track complaint SLA (4-hour response time)</li>
-                <li>Partner warning system (3-strike rule)</li>
-              </ul>
-              <code style={{ background: '#f5f5f5', padding: '4px 8px', borderRadius: 4, fontSize: 12 }}>
-                GET /api/admin/complaints
-              </code>
+            <div style={{ display: 'grid', gap: 12 }}>
+              {complaints.map(complaint => (
+                <div key={complaint.id} style={{ padding: 16, border: '1px solid #eee', borderRadius: 6 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <strong>Complaint #{complaint.id?.slice(0, 8) || complaint.id}</strong>
+                    <span style={{ color: '#666' }}>{new Date(complaint.created_at).toLocaleString()}</span>
+                  </div>
+                  <div style={{ marginBottom: 8 }}>Status: <strong>{complaint.status}</strong></div>
+                  <div style={{ marginBottom: 8 }}>Issue: {complaint.issue}</div>
+                  <div style={{ marginBottom: 8 }}>Order ID: {complaint.order_id}</div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <button onClick={() => escalateComplaint(complaint.id)} style={{ padding: '6px 12px', background: '#FF9800', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Escalate</button>
+                    <button onClick={() => resolveComplaint(complaint.id)} style={{ padding: '6px 12px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Resolve</button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
