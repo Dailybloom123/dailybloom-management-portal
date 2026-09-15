@@ -810,7 +810,7 @@ function PartnerDashboard({ user, onLogout }) {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`${API_BASE}/partners/orders`, {
+      const res = await fetch(`${API_BASE}/partner/available-orders`, {
         headers: { 'Authorization': `Bearer ${user.token}` }
       });
       const data = await res.json();
@@ -824,8 +824,8 @@ function PartnerDashboard({ user, onLogout }) {
 
   const acceptOrder = async (orderId) => {
     try {
-      const res = await fetch(`${API_BASE}/partners/orders/${orderId}/accept`, {
-        method: 'PATCH',
+      const res = await fetch(`${API_BASE}/partner/accept-order/${orderId}`, {
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${user.token}`,
           'Content-Type': 'application/json'
@@ -836,6 +836,24 @@ function PartnerDashboard({ user, onLogout }) {
       }
     } catch (err) {
       console.error('Failed to accept order:', err);
+    }
+  };
+
+  const rejectOrder = async (orderId, reason = 'Stock not available') => {
+    try {
+      const res = await fetch(`${API_BASE}/partner/reject-order/${orderId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ reason })
+      });
+      if (res.ok) {
+        fetchOrders();
+      }
+    } catch (err) {
+      console.error('Failed to reject order:', err);
     }
   };
 
@@ -964,6 +982,7 @@ function PartnerDashboard({ user, onLogout }) {
                 <div style={{ marginBottom: 8 }}>Total: ₹{order.total}</div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   <button onClick={() => acceptOrder(order.id)} style={{ padding: '6px 12px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Accept Order</button>
+                  <button onClick={() => rejectOrder(order.id, 'Stock not available')} style={{ padding: '6px 12px', background: '#f44336', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Reject Order</button>
                   <button onClick={() => updateOrderStatus(order.id, 'packed')} style={{ padding: '6px 12px', background: '#2196F3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Packed</button>
                   <button onClick={() => updateOrderStatus(order.id, 'out_for_delivery')} style={{ padding: '6px 12px', background: '#FF9800', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Out for Delivery</button>
                   <button onClick={() => updateOrderStatus(order.id, 'delivered')} style={{ padding: '6px 12px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Delivered</button>
