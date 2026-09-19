@@ -488,7 +488,7 @@ function AdminDashboard({ user, onLogout }) {
               {orders.map(order => (
                 <div key={order.id} style={{ padding: 16, border: '1px solid #eee', borderRadius: 6 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                    <strong>Order #{order.id?.slice(0, 8) || order.id}</strong>
+                    <strong>Order #{order.display_order_id || order.id?.slice(0, 8) || order.id}</strong>
                     <span style={{ color: '#666' }}>{new Date(order.created_at).toLocaleString()}</span>
                   </div>
                   <div style={{ marginBottom: 8 }}>Status: <strong>{order.status}</strong></div>
@@ -975,7 +975,7 @@ function PartnerDashboard({ user, onLogout }) {
             {orders.map(order => (
               <div key={order.id} style={{ padding: 16, border: '1px solid #eee', borderRadius: 6 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <strong>Order #{order.id?.slice(0, 8) || order.id}</strong>
+                  <strong>Order #{order.display_order_id || order.id?.slice(0, 8) || order.id}</strong>
                   <span style={{ color: '#666' }}>{new Date(order.created_at).toLocaleString()}</span>
                 </div>
                 <div style={{ marginBottom: 8 }}>Status: <strong>{order.status}</strong></div>
