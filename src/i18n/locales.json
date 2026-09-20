@@ -1,0 +1,80 @@
+{
+  "en": {
+    "translation": {
+      "welcome": "Welcome to DailyBloom",
+      "home": "Home",
+      "cart": "Cart",
+      "orders": "Orders",
+      "account": "Account",
+      "login": "Login",
+      "logout": "Logout",
+      "order": "Order",
+      "payment": "Payment",
+      "delivery": "Delivery",
+      "products": "Products",
+      "add_to_cart": "Add to Cart",
+      "checkout": "Checkout",
+      "success": "Success",
+      "error": "Error",
+      "loading": "Loading",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "search": "Search",
+      "filter": "Filter",
+      "sort": "Sort"
+    }
+  },
+  "hi": {
+    "translation": {
+      "welcome": "DailyBloom में आपका स्वागत है",
+      "home": "होम",
+      "cart": "कार्ट",
+      "orders": "ऑर्डर",
+      "account": "खाता",
+      "login": "लॉग इन",
+      "logout": "लॉग आउट",
+      "order": "ऑर्डर",
+      "payment": "भुगतानी",
+      "delivery": "डिलीवरी",
+      "products": "उत्पाद",
+      "add_to_cart": "कार्ट में जोड़ें",
+      "checkout": "चेकआउट",
+      "success": "सफलता",
+      "error": "त्रुटि",
+      "loading": "लोड हो रहा है",
+      "submit": "जमा करें",
+      "cancel": "रद्द करें",
+      "confirm": "पुष्टि करें",
+      "search": "खोजें",
+      "filter": "फ़िल्टर",
+      "sort": "क्रमबद्ध"
+    }
+  },
+  "as": {
+    "translation": {
+      "welcome": "দৈইলুমলঙলে স্বাগত আছি",
+      "home": "ঘৰ",
+      "cart": "কাৰ্ট",
+      "orders": "অৰ্ডার",
+      "account": "একাউন্ট",
+      "login": "লগ-ইন",
+      "logout": "লগ-আউট",
+      "order": "অৰ্ডার",
+      "payment": "পেমেন্ট",
+      "delivery": "ডেলিভারি",
+      "products": "পণ্য",
+      "add_to_cart": "কাৰ্টে যোগ কৰা",
+      "checkout": "চেকআউট",
+      "success": "সফলতা",
+      "error": "ভুল",
+      "loading": "লোড হচছে",
+      "submit": "জমা দিন",
+      "cancel": "বাতিল",
+      "confirm": "নিশ্চিত করা",
+      "search": "সন্ধান",
+      "filter": "ফিল্টার",
+      "sort": "ক্রম"
+    }
+  }
+}
