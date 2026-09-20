@@ -1201,6 +1201,8 @@ function AdminDashboard({ user, onLogout }) {
 function PartnerDashboard({ user, onLogout }) {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
+  const [procurementLists, setProcurementLists] = useState([]);
+  const [selectedProcurementList, setSelectedProcurementList] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('orders');
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -1211,6 +1213,7 @@ function PartnerDashboard({ user, onLogout }) {
   useEffect(() => {
     if (activeTab === 'orders') fetchOrders();
     if (activeTab === 'products') fetchProducts();
+    if (activeTab === 'procurement') fetchProcurementLists();
   }, [activeTab]);
 
   const fetchOrders = async () => {
@@ -1240,6 +1243,66 @@ function PartnerDashboard({ user, onLogout }) {
       console.error('Failed to fetch products:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchProcurementLists = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/procurement/partner`, {
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      const data = await res.json();
+      if (res.ok) setProcurementLists(data.procurementLists || []);
+    } catch (err) {
+      console.error('Failed to fetch procurement lists:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateShortfall = async (listId, itemId, shortfallQuantity) => {
+    try {
+      const res = await fetch(`${API_BASE}/procurement/${listId}/items/${itemId}/shortfall`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ shortfall_quantity: shortfallQuantity })
+      });
+      if (res.ok) {
+        alert('Shortfall updated successfully');
+        fetchProcurementLists();
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error || 'Failed to update shortfall');
+      }
+    } catch (err) {
+      console.error('Failed to update shortfall:', err);
+      alert('Failed to update shortfall');
+    }
+  };
+
+  const submitProcurementList = async (listId) => {
+    if (!confirm('Are you sure you want to submit this procurement list? Orders with shortfalls will be rejected and refunded.')) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/procurement/${listId}/submit`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      if (res.ok) {
+        alert('Procurement list submitted successfully');
+        fetchProcurementLists();
+        setSelectedProcurementList(null);
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error || 'Failed to submit procurement list');
+      }
+    } catch (err) {
+      console.error('Failed to submit procurement list:', err);
+      alert('Failed to submit procurement list');
     }
   };
 
@@ -1403,6 +1466,7 @@ function PartnerDashboard({ user, onLogout }) {
       <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
         <button onClick={() => setActiveTab('orders')} style={{ padding: '8px 16px', background: activeTab === 'orders' ? '#333' : '#f5f5f5', color: activeTab === 'orders' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Orders</button>
         <button onClick={() => setActiveTab('products')} style={{ padding: '8px 16px', background: activeTab === 'products' ? '#333' : '#f5f5f5', color: activeTab === 'products' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Products</button>
+        <button onClick={() => setActiveTab('procurement')} style={{ padding: '8px 16px', background: activeTab === 'procurement' ? '#333' : '#f5f5f5', color: activeTab === 'procurement' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Procurement List</button>
       </div>
 
       {/* Orders Tab */}
@@ -1472,6 +1536,92 @@ function PartnerDashboard({ user, onLogout }) {
                   <div style={{ fontSize: 12, color: '#666' }}>
                     {product.is_active ? 'Product is visible to customers' : 'Product is hidden from customers'}
                   </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Procurement List Tab */}
+      {activeTab === 'procurement' && (
+        <div style={{ background: 'white', borderRadius: 8, padding: 20, marginBottom: 20 }}>
+          <h2 style={{ marginBottom: 16 }}>Procurement List (Buy List)</h2>
+          {loading ? (
+            <div>Loading procurement lists...</div>
+          ) : procurementLists.length === 0 ? (
+            <div style={{ color: '#666' }}>No procurement lists available yet. Lists are generated at 9:01 PM IST.</div>
+          ) : selectedProcurementList ? (
+            <div>
+              <button onClick={() => setSelectedProcurementList(null)} style={{ marginBottom: 16, padding: '8px 16px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer' }}>← Back to Lists</button>
+              <div style={{ padding: 16, border: '1px solid #eee', borderRadius: 6, marginBottom: 16 }}>
+                <h3 style={{ marginBottom: 8 }}>Date: {selectedProcurementList.date}</h3>
+                <div style={{ marginBottom: 8 }}>Total Items: {selectedProcurementList.total_items}</div>
+                <div style={{ marginBottom: 8 }}>Total Orders: {selectedProcurementList.total_orders}</div>
+                <div style={{ marginBottom: 8 }}>Status: <strong>{selectedProcurementList.status}</strong></div>
+                {selectedProcurementList.status !== 'submitted' && (
+                  <button
+                    onClick={() => submitProcurementList(selectedProcurementList.id)}
+                    style={{ padding: '8px 16px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
+                  >
+                    Submit Procurement List
+                  </button>
+                )}
+              </div>
+              <h3 style={{ marginBottom: 16 }}>Items</h3>
+              {selectedProcurementList.items && selectedProcurementList.items.length > 0 ? (
+                <div style={{ display: 'grid', gap: 12 }}>
+                  {selectedProcurementList.items.map(item => (
+                    <div key={item.id} style={{ padding: 16, border: '1px solid #eee', borderRadius: 6 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                        <strong>Order #{item.order_id?.slice(0, 8) || item.order_id}</strong>
+                        <span style={{ color: '#666' }}>Qty: {item.quantity}</span>
+                      </div>
+                      <div style={{ marginBottom: 8 }}>Customer: {item.customer_name} ({item.customer_phone})</div>
+                      <div style={{ marginBottom: 8 }}>Address: {item.address}</div>
+                      <div style={{ marginBottom: 8 }}>Price: ₹{item.price}</div>
+                      {selectedProcurementList.status !== 'submitted' && (
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                          <label style={{ fontWeight: 600 }}>Shortfall Qty:</label>
+                          <input
+                            type="number"
+                            min="0"
+                            max={item.quantity}
+                            defaultValue={item.shortfall_quantity || 0}
+                            onChange={(e) => {
+                              const shortfall = parseInt(e.target.value) || 0;
+                              if (shortfall >= 0 && shortfall <= item.quantity) {
+                                updateShortfall(selectedProcurementList.id, item.id, shortfall);
+                              }
+                            }}
+                            style={{ padding: '8px', borderRadius: 4, border: '1px solid #ddd', width: 80 }}
+                          />
+                          <span style={{ fontSize: 12, color: '#666' }}>(Max: {item.quantity})</span>
+                        </div>
+                      )}
+                      {item.shortfall_quantity > 0 && (
+                        <div style={{ marginTop: 8, padding: 8, background: '#fee', borderRadius: 4, color: '#c33', fontSize: 12 }}>
+                          Shortfall: {item.shortfall_quantity} units will be rejected and refunded
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ color: '#666' }}>No items in this procurement list.</div>
+              )}
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gap: 12 }}>
+              {procurementLists.map(list => (
+                <div key={list.id} style={{ padding: 16, border: '1px solid #eee', borderRadius: 6, cursor: 'pointer' }} onClick={() => setSelectedProcurementList(list)}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <strong>Date: {list.date}</strong>
+                    <span style={{ color: '#666' }}>{list.status}</span>
+                  </div>
+                  <div style={{ marginBottom: 8 }}>Total Items: {list.total_items}</div>
+                  <div style={{ marginBottom: 8 }}>Total Orders: {list.total_orders}</div>
+                  <button style={{ padding: '6px 12px', background: '#2196F3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>View Details</button>
                 </div>
               ))}
             </div>
