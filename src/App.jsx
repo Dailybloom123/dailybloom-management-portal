@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import './i18n'; // Initialize i18next
+import { useTranslation } from 'react-i18next';
 
 const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:4000/api'
   : 'https://dailybloom-x82y.onrender.com/api';
 
 function App() {
+  const { t, i18n } = useTranslation();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [currentLang, setCurrentLang] = useState(i18n.language);
+
+  const changeLanguage = (lang) => {
+    i18n.changeLanguage(lang);
+    setCurrentLang(lang);
+    localStorage.setItem('dailybloom_language', lang);
+  };
 
   useEffect(() => {
     // Check for existing admin/partner session
@@ -41,6 +51,18 @@ function App() {
   return (
     <Router>
       <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
+        {/* Language Selector */}
+        <div style={{ position: 'fixed', top: 10, right: 10, zIndex: 1000, background: 'white', padding: '8px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+          <select 
+            value={currentLang} 
+            onChange={(e) => changeLanguage(e.target.value)}
+            style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #ddd' }}
+          >
+            <option value="en">English</option>
+            <option value="hi">हिंदी</option>
+            <option value="as">অসমীয়া</option>
+          </select>
+        </div>
         <Routes>
           <Route path="/" element={user ? <Navigate to={`/${user.role}`} /> : <LoginPage setUser={setUser} setError={setError} error={error} />} />
           <Route path="/admin" element={user?.role === 'admin' ? <AdminDashboard user={user} onLogout={handleLogout} /> : <Navigate to="/" />} />
