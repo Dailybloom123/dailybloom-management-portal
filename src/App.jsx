@@ -92,7 +92,7 @@ function LoginPage({ setUser, setError, error }) {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: 20 }}>
       <div style={{ background: 'white', borderRadius: 12, padding: 40, boxShadow: '0 4px 20px rgba(0,0,0,0.1)', width: '100%', maxWidth: 400 }}>
         <h1 style={{ textAlign: 'center', marginBottom: 8, color: '#333' }}>DailyBloom</h1>
-        <p style={{ textAlign: 'center', marginBottom: 24, color: '#666' }}>Admin & Partner Portal</p>
+        <p style={{ textAlign: 'center', marginBottom: 24, color: '#666' }}>Management & Partner Portal</p>
 
         <div style={{ display: 'flex', marginBottom: 24, gap: 8 }}>
           <button
@@ -193,6 +193,9 @@ function AdminDashboard({ user, onLogout }) {
   const [editingPartner, setEditingPartner] = useState(null);
   const [showPartnerDetails, setShowPartnerDetails] = useState(false);
   const [complaints, setComplaints] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [showProductForm, setShowProductForm] = useState(false);
 
   useEffect(() => {
     if (activeTab === 'orders') fetchOrders();
@@ -200,6 +203,7 @@ function AdminDashboard({ user, onLogout }) {
     if (activeTab === 'staging') fetchStagingOrders();
     if (activeTab === 'partners') fetchPartners();
     if (activeTab === 'complaints') fetchComplaints();
+    if (activeTab === 'products') fetchProducts();
   }, [activeTab]);
 
   const fetchOrders = async () => {
@@ -313,6 +317,21 @@ function AdminDashboard({ user, onLogout }) {
     }
   };
 
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/admin/products`, {
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      const data = await res.json();
+      if (res.ok) setProducts(data);
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const escalateComplaint = async (complaintId) => {
     try {
       const res = await fetch(`${API_BASE}/admin/complaints/${complaintId}/escalate`, {
@@ -377,10 +396,66 @@ function AdminDashboard({ user, onLogout }) {
     }
   };
 
+  const createProduct = async (productData) => {
+    try {
+      const res = await fetch(`${API_BASE}/admin/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        },
+        body: JSON.stringify(productData)
+      });
+      if (res.ok) {
+        fetchProducts();
+        setShowProductForm(false);
+        setEditingProduct(null);
+      }
+    } catch (err) {
+      console.error('Failed to create product:', err);
+    }
+  };
+
+  const updateProduct = async (productId, productData) => {
+    try {
+      const res = await fetch(`${API_BASE}/admin/products/${productId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        },
+        body: JSON.stringify(productData)
+      });
+      if (res.ok) {
+        fetchProducts();
+        setShowProductForm(false);
+        setEditingProduct(null);
+      }
+    } catch (err) {
+      console.error('Failed to update product:', err);
+    }
+  };
+
+  const deleteProduct = async (productId) => {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/admin/products/${productId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      if (res.ok) {
+        fetchProducts();
+      }
+    } catch (err) {
+      console.error('Failed to delete product:', err);
+    }
+  };
+
   return (
     <div style={{ padding: 20 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h1 style={{ margin: 0 }}>Admin Dashboard</h1>
+        <h1 style={{ margin: 0 }}>Management Dashboard</h1>
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={() => setShowChangePassword(true)} style={{ padding: '8px 16px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Change Password</button>
           <button onClick={onLogout} style={{ padding: '8px 16px', background: '#333', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Logout</button>
@@ -471,6 +546,7 @@ function AdminDashboard({ user, onLogout }) {
         <button onClick={() => setActiveTab('orders')} style={{ padding: '8px 16px', background: activeTab === 'orders' ? '#333' : '#f5f5f5', color: activeTab === 'orders' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Orders</button>
         <button onClick={() => setActiveTab('stats')} style={{ padding: '8px 16px', background: activeTab === 'stats' ? '#333' : '#f5f5f5', color: activeTab === 'stats' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Statistics</button>
         <button onClick={() => setActiveTab('partners')} style={{ padding: '8px 16px', background: activeTab === 'partners' ? '#333' : '#f5f5f5', color: activeTab === 'partners' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Partners</button>
+        <button onClick={() => setActiveTab('products')} style={{ padding: '8px 16px', background: activeTab === 'products' ? '#333' : '#f5f5f5', color: activeTab === 'products' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Products</button>
         <button onClick={() => setActiveTab('complaints')} style={{ padding: '8px 16px', background: activeTab === 'complaints' ? '#333' : '#f5f5f5', color: activeTab === 'complaints' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Complaints</button>
         <button onClick={() => setActiveTab('staging')} style={{ padding: '8px 16px', background: activeTab === 'staging' ? '#333' : '#f5f5f5', color: activeTab === 'staging' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Staging Queue</button>
       </div>
@@ -726,6 +802,120 @@ function AdminDashboard({ user, onLogout }) {
               <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
                 <button type="submit" style={{ flex: 1, padding: 12, background: '#333', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Update Partner</button>
                 <button type="button" onClick={() => { setShowPartnerDetails(false); setEditingPartner(null); }} style={{ flex: 1, padding: 12, background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Products Tab */}
+      {activeTab === 'products' && (
+        <div style={{ background: 'white', borderRadius: 8, padding: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <h2 style={{ margin: 0 }}>Product Management</h2>
+            <button onClick={() => { setEditingProduct(null); setShowProductForm(true); }} style={{ padding: '8px 16px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Add Product</button>
+          </div>
+          {loading ? (
+            <div>Loading products...</div>
+          ) : products.length === 0 ? (
+            <div style={{ color: '#666' }}>No products yet.</div>
+          ) : (
+            <div style={{ display: 'grid', gap: 12 }}>
+              {products.map(product => (
+                <div key={product.id} style={{ padding: 16, border: '1px solid #eee', borderRadius: 6 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <strong>{product.name}</strong>
+                    <span style={{ color: '#666' }}>₹{product.price}</span>
+                  </div>
+                  <div style={{ marginBottom: 8 }}>Category: {product.category}</div>
+                  <div style={{ marginBottom: 8 }}>Stock: {product.stock}</div>
+                  <div style={{ marginBottom: 8 }}>Partner: {product.partner_name || 'Unassigned'}</div>
+                  <div style={{ marginBottom: 8 }}>Status: {product.is_active ? 'Active' : 'Inactive'}</div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <button onClick={() => { setEditingProduct(product); setShowProductForm(true); }} style={{ padding: '6px 12px', background: '#2196F3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Edit</button>
+                    <button onClick={() => deleteProduct(product.id)} style={{ padding: '6px 12px', background: '#f44336', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Delete</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Product Form Modal */}
+      {showProductForm && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'white', borderRadius: 12, padding: 32, width: '100%', maxWidth: 500, maxHeight: '90vh', overflowY: 'auto' }}>
+            <h2 style={{ marginBottom: 20 }}>{editingProduct ? 'Edit Product' : 'Add Product'}</h2>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              const productData = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                price: parseFloat(formData.get('price')),
+                stock: parseInt(formData.get('stock')),
+                category: formData.get('category'),
+                image_url: formData.get('image_url'),
+                partner_id: formData.get('partner_id'),
+                is_active: formData.get('is_active') === 'true'
+              };
+              if (editingProduct) {
+                await updateProduct(editingProduct.id, productData);
+              } else {
+                await createProduct(productData);
+              }
+            }} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Product Name *</label>
+                <input name="name" defaultValue={editingProduct?.name} required style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Description</label>
+                <textarea name="description" defaultValue={editingProduct?.description || ''} rows="3" style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Price (₹) *</label>
+                <input name="price" type="number" step="0.01" defaultValue={editingProduct?.price} required style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Stock *</label>
+                <input name="stock" type="number" defaultValue={editingProduct?.stock || 0} required style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Category *</label>
+                <select name="category" defaultValue={editingProduct?.category} required style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd' }}>
+                  <option value="">Select Category</option>
+                  <option value="dairy">Dairy</option>
+                  <option value="flowers">Flowers</option>
+                  <option value="bakery">Bakery</option>
+                  <option value="honey">Honey</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Partner *</label>
+                <select name="partner_id" defaultValue={editingProduct?.partner_id} required style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd' }}>
+                  <option value="">Select Partner</option>
+                  {partners.map(partner => (
+                    <option key={partner.id} value={partner.id}>{partner.name} ({partner.partner_type})</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Image URL</label>
+                <input name="image_url" defaultValue={editingProduct?.image_url || ''} placeholder="https://..." style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Status</label>
+                <select name="is_active" defaultValue={editingProduct?.is_active !== false ? 'true' : 'false'} style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd' }}>
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                <button type="submit" style={{ flex: 1, padding: 12, background: '#333', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>{editingProduct ? 'Update Product' : 'Add Product'}</button>
+                <button type="button" onClick={() => { setShowProductForm(false); setEditingProduct(null); }} style={{ flex: 1, padding: 12, background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Cancel</button>
               </div>
             </form>
           </div>
