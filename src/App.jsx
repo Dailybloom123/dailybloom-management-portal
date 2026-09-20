@@ -199,6 +199,12 @@ function AdminDashboard({ user, onLogout }) {
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [showCustomerDetails, setShowCustomerDetails] = useState(false);
+  const [showWalletAdjustment, setShowWalletAdjustment] = useState(false);
+  const [walletAdjustment, setWalletAdjustment] = useState({
+    amount: '',
+    adjustment_type: 'credit',
+    reason: ''
+  });
 
   useEffect(() => {
     if (activeTab === 'orders') fetchOrders();
@@ -363,6 +369,42 @@ function AdminDashboard({ user, onLogout }) {
       }
     } catch (err) {
       console.error('Failed to fetch customer details:', err);
+    }
+  };
+
+  const handleWalletAdjustment = async () => {
+    if (!selectedCustomer || !walletAdjustment.amount) {
+      alert('Please enter an amount');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/wallet/admin/adjust`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        },
+        body: JSON.stringify({
+          user_id: selectedCustomer.user.id,
+          amount: parseFloat(walletAdjustment.amount),
+          adjustment_type: walletAdjustment.adjustment_type,
+          reason: walletAdjustment.reason
+        })
+      });
+
+      if (res.ok) {
+        alert('Wallet adjustment successful');
+        setShowWalletAdjustment(false);
+        setWalletAdjustment({ amount: '', adjustment_type: 'credit', reason: '' });
+        fetchCustomerDetails(selectedCustomer.user.id); // Refresh customer details
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error || 'Failed to adjust wallet');
+      }
+    } catch (err) {
+      console.error('Failed to adjust wallet:', err);
+      alert('Failed to adjust wallet');
     }
   };
 
@@ -1008,6 +1050,9 @@ function AdminDashboard({ user, onLogout }) {
               <strong>Escrow Balance:</strong> ₹{selectedCustomer.user.escrow_balance || 0}
             </div>
             <div style={{ marginBottom: 16 }}>
+              <button onClick={() => setShowWalletAdjustment(true)} style={{ padding: '8px 16px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer', fontWeight: 600 }}>Adjust Wallet Balance</button>
+            </div>
+            <div style={{ marginBottom: 16 }}>
               <strong>Total Orders:</strong> {selectedCustomer.stats.total_orders || 0}
             </div>
             <div style={{ marginBottom: 16 }}>
@@ -1033,6 +1078,58 @@ function AdminDashboard({ user, onLogout }) {
               </div>
             )}
             <button onClick={() => { setShowCustomerDetails(false); setSelectedCustomer(null); }} style={{ padding: '12px 24px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* Wallet Adjustment Modal */}
+      {showWalletAdjustment && selectedCustomer && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'white', borderRadius: 12, padding: 32, width: '100%', maxWidth: 500 }}>
+            <h2 style={{ marginBottom: 20 }}>Adjust Wallet Balance</h2>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Customer:</strong> {selectedCustomer.user.name}
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Current Balance:</strong> ₹{selectedCustomer.user.wallet_balance || 0}
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Adjustment Type</label>
+              <select
+                value={walletAdjustment.adjustment_type}
+                onChange={(e) => setWalletAdjustment({ ...walletAdjustment, adjustment_type: e.target.value })}
+                style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd', fontSize: 14 }}
+              >
+                <option value="credit">Credit (Add Funds)</option>
+                <option value="debit">Debit (Remove Funds)</option>
+              </select>
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Amount (₹)</label>
+              <input
+                type="number"
+                value={walletAdjustment.amount}
+                onChange={(e) => setWalletAdjustment({ ...walletAdjustment, amount: e.target.value })}
+                min="0.01"
+                step="0.01"
+                placeholder="Enter amount"
+                style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd', fontSize: 14 }}
+              />
+            </div>
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>Reason</label>
+              <input
+                type="text"
+                value={walletAdjustment.reason}
+                onChange={(e) => setWalletAdjustment({ ...walletAdjustment, reason: e.target.value })}
+                placeholder="e.g., Refund, promotional credit, adjustment"
+                style={{ width: '100%', padding: 12, borderRadius: 6, border: '1px solid #ddd', fontSize: 14 }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button onClick={handleWalletAdjustment} style={{ flex: 1, padding: 12, background: '#4CAF50', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Confirm Adjustment</button>
+              <button onClick={() => { setShowWalletAdjustment(false); setWalletAdjustment({ amount: '', adjustment_type: 'credit', reason: '' }); }} style={{ flex: 1, padding: 12, background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Cancel</button>
+            </div>
           </div>
         </div>
       )}
