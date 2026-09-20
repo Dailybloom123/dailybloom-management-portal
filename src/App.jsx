@@ -196,6 +196,9 @@ function AdminDashboard({ user, onLogout }) {
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [showProductForm, setShowProductForm] = useState(false);
+  const [customers, setCustomers] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [showCustomerDetails, setShowCustomerDetails] = useState(false);
 
   useEffect(() => {
     if (activeTab === 'orders') fetchOrders();
@@ -204,6 +207,7 @@ function AdminDashboard({ user, onLogout }) {
     if (activeTab === 'partners') fetchPartners();
     if (activeTab === 'complaints') fetchComplaints();
     if (activeTab === 'products') fetchProducts();
+    if (activeTab === 'customers') fetchCustomers();
   }, [activeTab]);
 
   const fetchOrders = async () => {
@@ -329,6 +333,36 @@ function AdminDashboard({ user, onLogout }) {
       console.error('Failed to fetch products:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/admin/customers`, {
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      const data = await res.json();
+      if (res.ok) setCustomers(data);
+    } catch (err) {
+      console.error('Failed to fetch customers:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCustomerDetails = async (customerId) => {
+    try {
+      const res = await fetch(`${API_BASE}/admin/customers/${customerId}`, {
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSelectedCustomer(data);
+        setShowCustomerDetails(true);
+      }
+    } catch (err) {
+      console.error('Failed to fetch customer details:', err);
     }
   };
 
@@ -547,6 +581,7 @@ function AdminDashboard({ user, onLogout }) {
         <button onClick={() => setActiveTab('stats')} style={{ padding: '8px 16px', background: activeTab === 'stats' ? '#333' : '#f5f5f5', color: activeTab === 'stats' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Statistics</button>
         <button onClick={() => setActiveTab('partners')} style={{ padding: '8px 16px', background: activeTab === 'partners' ? '#333' : '#f5f5f5', color: activeTab === 'partners' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Partners</button>
         <button onClick={() => setActiveTab('products')} style={{ padding: '8px 16px', background: activeTab === 'products' ? '#333' : '#f5f5f5', color: activeTab === 'products' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Products</button>
+        <button onClick={() => setActiveTab('customers')} style={{ padding: '8px 16px', background: activeTab === 'customers' ? '#333' : '#f5f5f5', color: activeTab === 'customers' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Customers</button>
         <button onClick={() => setActiveTab('complaints')} style={{ padding: '8px 16px', background: activeTab === 'complaints' ? '#333' : '#f5f5f5', color: activeTab === 'complaints' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Complaints</button>
         <button onClick={() => setActiveTab('staging')} style={{ padding: '8px 16px', background: activeTab === 'staging' ? '#333' : '#f5f5f5', color: activeTab === 'staging' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Staging Queue</button>
       </div>
@@ -922,6 +957,86 @@ function AdminDashboard({ user, onLogout }) {
         </div>
       )}
 
+      {/* Customers Tab */}
+      {activeTab === 'customers' && (
+        <div style={{ background: 'white', borderRadius: 8, padding: 20 }}>
+          <h2 style={{ marginBottom: 16 }}>Customer Management</h2>
+          {loading ? (
+            <div>Loading customers...</div>
+          ) : customers.length === 0 ? (
+            <div style={{ color: '#666' }}>No customers yet.</div>
+          ) : (
+            <div style={{ display: 'grid', gap: 12 }}>
+              {customers.map(customer => (
+                <div key={customer.id} style={{ padding: 16, border: '1px solid #eee', borderRadius: 6 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <strong>{customer.name}</strong>
+                    <span style={{ color: '#666' }}>{new Date(customer.created_at).toLocaleDateString()}</span>
+                  </div>
+                  <div style={{ marginBottom: 8 }}>Email: {customer.email || 'N/A'}</div>
+                  <div style={{ marginBottom: 8 }}>Phone: {customer.phone || 'N/A'}</div>
+                  <div style={{ marginBottom: 8 }}>Wallet Balance: ₹{customer.wallet_balance || 0}</div>
+                  <div style={{ marginBottom: 8 }}>Escrow Balance: ₹{customer.escrow_balance || 0}</div>
+                  <div style={{ marginBottom: 8 }}>Saved Addresses: {customer.address_count || 0}</div>
+                  <div style={{ marginBottom: 8 }}>Last Login: {customer.last_login_at ? new Date(customer.last_login_at).toLocaleString() : 'Never'}</div>
+                  <button onClick={() => fetchCustomerDetails(customer.id)} style={{ padding: '6px 12px', background: '#2196F3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>View Details</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Customer Details Modal */}
+      {showCustomerDetails && selectedCustomer && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'white', borderRadius: 12, padding: 32, width: '100%', maxWidth: 600, maxHeight: '90vh', overflowY: 'auto' }}>
+            <h2 style={{ marginBottom: 20 }}>Customer Details</h2>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Name:</strong> {selectedCustomer.user.name}
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Email:</strong> {selectedCustomer.user.email || 'N/A'}
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Phone:</strong> {selectedCustomer.user.phone || 'N/A'}
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Wallet Balance:</strong> ₹{selectedCustomer.user.wallet_balance || 0}
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Escrow Balance:</strong> ₹{selectedCustomer.user.escrow_balance || 0}
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Total Orders:</strong> {selectedCustomer.stats.total_orders || 0}
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Delivered Orders:</strong> {selectedCustomer.stats.delivered_orders || 0}
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <strong>Total Spent:</strong> ₹{selectedCustomer.stats.total_spent || 0}
+            </div>
+            <h3 style={{ marginBottom: 12 }}>Saved Addresses</h3>
+            {selectedCustomer.addresses.length === 0 ? (
+              <div style={{ color: '#666', marginBottom: 16 }}>No saved addresses.</div>
+            ) : (
+              <div style={{ display: 'grid', gap: 8, marginBottom: 16 }}>
+                {selectedCustomer.addresses.map(address => (
+                  <div key={address.id} style={{ padding: 12, border: '1px solid #eee', borderRadius: 6 }}>
+                    <div style={{ fontWeight: 600, marginBottom: 4 }}>{address.title || 'Address'}</div>
+                    <div>{address.line1}</div>
+                    <div>{address.city}, {address.pincode}</div>
+                    <div style={{ fontSize: 12, color: '#666' }}>{address.locality}</div>
+                    {address.is_default && <span style={{ fontSize: 12, color: '#4CAF50', fontWeight: 600 }}>Default</span>}
+                  </div>
+                ))}
+              </div>
+            )}
+            <button onClick={() => { setShowCustomerDetails(false); setSelectedCustomer(null); }} style={{ padding: '12px 24px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Close</button>
+          </div>
+        </div>
+      )}
+
       {/* Complaints Tab */}
       {activeTab === 'complaints' && (
         <div style={{ background: 'white', borderRadius: 8, padding: 20 }}>
@@ -988,27 +1103,60 @@ function AdminDashboard({ user, onLogout }) {
 
 function PartnerDashboard({ user, onLogout }) {
   const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('orders');
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' });
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    if (activeTab === 'orders') fetchOrders();
+    if (activeTab === 'products') fetchProducts();
+  }, [activeTab]);
 
   const fetchOrders = async () => {
+    setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/partner/available-orders`, {
+      const res = await fetch(`${API_BASE}/partner/orders`, {
         headers: { 'Authorization': `Bearer ${user.token}` }
       });
       const data = await res.json();
-      if (res.ok) setOrders(data.success ? data.orders : data);
+      if (res.ok) setOrders(data);
     } catch (err) {
       console.error('Failed to fetch orders:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/partner/products`, {
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      const data = await res.json();
+      if (res.ok) setProducts(data);
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleProductAvailability = async (productId) => {
+    try {
+      const res = await fetch(`${API_BASE}/partner/products/${productId}/toggle-availability`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      });
+      if (res.ok) {
+        fetchProducts();
+      }
+    } catch (err) {
+      console.error('Failed to toggle product availability:', err);
     }
   };
 
@@ -1154,34 +1302,85 @@ function PartnerDashboard({ user, onLogout }) {
         </div>
       )}
 
-      <div style={{ background: 'white', borderRadius: 8, padding: 20, marginBottom: 20 }}>
-        <h2 style={{ marginBottom: 16 }}>Assigned Orders</h2>
-        {loading ? (
-          <div>Loading orders...</div>
-        ) : orders.length === 0 ? (
-          <div style={{ color: '#666' }}>No orders assigned to you yet. Once customers place orders, they will appear here.</div>
-        ) : (
-          <div style={{ display: 'grid', gap: 12 }}>
-            {orders.map(order => (
-              <div key={order.id} style={{ padding: 16, border: '1px solid #eee', borderRadius: 6 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <strong>Order #{order.display_order_id || order.id?.slice(0, 8) || order.id}</strong>
-                  <span style={{ color: '#666' }}>{new Date(order.created_at).toLocaleString()}</span>
-                </div>
-                <div style={{ marginBottom: 8 }}>Status: <strong>{order.status}</strong></div>
-                <div style={{ marginBottom: 8 }}>Total: ₹{order.total}</div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <button onClick={() => acceptOrder(order.id)} style={{ padding: '6px 12px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Accept Order</button>
-                  <button onClick={() => rejectOrder(order.id, 'Stock not available')} style={{ padding: '6px 12px', background: '#f44336', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Reject Order</button>
-                  <button onClick={() => updateOrderStatus(order.id, 'packed')} style={{ padding: '6px 12px', background: '#2196F3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Packed</button>
-                  <button onClick={() => updateOrderStatus(order.id, 'out_for_delivery')} style={{ padding: '6px 12px', background: '#FF9800', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Out for Delivery</button>
-                  <button onClick={() => updateOrderStatus(order.id, 'delivered')} style={{ padding: '6px 12px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Delivered</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+      {/* Navigation Tabs */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+        <button onClick={() => setActiveTab('orders')} style={{ padding: '8px 16px', background: activeTab === 'orders' ? '#333' : '#f5f5f5', color: activeTab === 'orders' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Orders</button>
+        <button onClick={() => setActiveTab('products')} style={{ padding: '8px 16px', background: activeTab === 'products' ? '#333' : '#f5f5f5', color: activeTab === 'products' ? 'white' : '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Products</button>
       </div>
+
+      {/* Orders Tab */}
+      {activeTab === 'orders' && (
+        <div style={{ background: 'white', borderRadius: 8, padding: 20, marginBottom: 20 }}>
+          <h2 style={{ marginBottom: 16 }}>Assigned Orders</h2>
+          {loading ? (
+            <div>Loading orders...</div>
+          ) : orders.length === 0 ? (
+            <div style={{ color: '#666' }}>No orders assigned to you yet. Once customers place orders, they will appear here.</div>
+          ) : (
+            <div style={{ display: 'grid', gap: 12 }}>
+              {orders.map(order => (
+                <div key={order.id} style={{ padding: 16, border: '1px solid #eee', borderRadius: 6 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <strong>Order #{order.display_order_id || order.id?.slice(0, 8) || order.id}</strong>
+                    <span style={{ color: '#666' }}>{new Date(order.created_at).toLocaleString()}</span>
+                  </div>
+                  <div style={{ marginBottom: 8 }}>Status: <strong>{order.status}</strong></div>
+                  <div style={{ marginBottom: 8 }}>Total: ₹{order.total}</div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <button onClick={() => acceptOrder(order.id)} style={{ padding: '6px 12px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Accept Order</button>
+                    <button onClick={() => rejectOrder(order.id, 'Stock not available')} style={{ padding: '6px 12px', background: '#f44336', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Reject Order</button>
+                    <button onClick={() => updateOrderStatus(order.id, 'packed')} style={{ padding: '6px 12px', background: '#2196F3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Packed</button>
+                    <button onClick={() => updateOrderStatus(order.id, 'out_for_delivery')} style={{ padding: '6px 12px', background: '#FF9800', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Out for Delivery</button>
+                    <button onClick={() => updateOrderStatus(order.id, 'delivered')} style={{ padding: '6px 12px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Delivered</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Products Tab */}
+      {activeTab === 'products' && (
+        <div style={{ background: 'white', borderRadius: 8, padding: 20, marginBottom: 20 }}>
+          <h2 style={{ marginBottom: 16 }}>My Products</h2>
+          {loading ? (
+            <div>Loading products...</div>
+          ) : products.length === 0 ? (
+            <div style={{ color: '#666' }}>No products assigned to you yet.</div>
+          ) : (
+            <div style={{ display: 'grid', gap: 12 }}>
+              {products.map(product => (
+                <div key={product.id} style={{ padding: 16, border: '1px solid #eee', borderRadius: 6 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <strong>{product.name}</strong>
+                    <button
+                      onClick={() => toggleProductAvailability(product.id)}
+                      style={{
+                        padding: '6px 12px',
+                        background: product.is_active ? '#4CAF50' : '#f44336',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: 4,
+                        cursor: 'pointer',
+                        fontWeight: 600
+                      }}
+                    >
+                      {product.is_active ? 'Available' : 'Out of Stock'}
+                    </button>
+                  </div>
+                  <div style={{ marginBottom: 8 }}>Category: {product.category}</div>
+                  <div style={{ marginBottom: 8 }}>Price: ₹{product.price}</div>
+                  <div style={{ marginBottom: 8 }}>Stock: {product.stock}</div>
+                  <div style={{ fontSize: 12, color: '#666' }}>
+                    {product.is_active ? 'Product is visible to customers' : 'Product is hidden from customers'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
