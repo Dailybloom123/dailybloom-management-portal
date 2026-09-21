@@ -70,3 +70,15 @@ body {
     padding: 6px 8px !important;
   }
 }
+
+/* Toast notification animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

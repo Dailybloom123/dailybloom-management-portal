@@ -257,6 +257,7 @@ function AdminDashboard({ user, onLogout }) {
     adjustment_type: 'credit',
     reason: ''
   });
+  const [notification, setNotification] = useState(null);
 
   const isMobile = window.innerWidth <= 768;
 
@@ -501,15 +502,18 @@ function AdminDashboard({ user, onLogout }) {
         body: JSON.stringify({ status })
       });
       if (res.ok) {
-        alert(`Order status updated to ${status}`);
+        setNotification({ type: 'success', message: `Order status updated to ${status}` });
+        setTimeout(() => setNotification(null), 3000);
         fetchOrders();
       } else {
         const errorData = await res.json().catch(() => ({}));
-        alert(`Failed to update order: ${errorData.error || res.statusText}`);
+        setNotification({ type: 'error', message: `Failed to update order: ${errorData.error || res.statusText}` });
+        setTimeout(() => setNotification(null), 5000);
       }
     } catch (err) {
       console.error('Failed to update order:', err);
-      alert('Failed to update order. Please try again.');
+      setNotification({ type: 'error', message: 'Failed to update order. Please try again.' });
+      setTimeout(() => setNotification(null), 5000);
     }
   };
 
@@ -589,6 +593,24 @@ function AdminDashboard({ user, onLogout }) {
 
   return (
     <div style={{ padding: 'clamp(12px, 3vw, 20px)' }}>
+      {/* Notification Toast */}
+      {notification && (
+        <div style={{
+          position: 'fixed',
+          top: 20,
+          right: 20,
+          padding: 16,
+          borderRadius: 8,
+          background: notification.type === 'success' ? '#4CAF50' : '#f44336',
+          color: 'white',
+          zIndex: 1000,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          animation: 'slideIn 0.3s ease-out'
+        }}>
+          {notification.message}
+        </div>
+      )}
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
         <h1 style={{ margin: 0, fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>Management Dashboard</h1>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -1268,6 +1290,7 @@ function PartnerDashboard({ user, onLogout }) {
   const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' });
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     if (activeTab === 'orders') fetchOrders();
@@ -1425,20 +1448,41 @@ function PartnerDashboard({ user, onLogout }) {
         body: JSON.stringify({ status })
       });
       if (res.ok) {
-        alert(`Order status updated to ${status}`);
+        setNotification({ type: 'success', message: `Order status updated to ${status}` });
+        setTimeout(() => setNotification(null), 3000);
         fetchOrders();
       } else {
         const errorData = await res.json().catch(() => ({}));
-        alert(`Failed to update order: ${errorData.error || res.statusText}`);
+        setNotification({ type: 'error', message: `Failed to update order: ${errorData.error || res.statusText}` });
+        setTimeout(() => setNotification(null), 5000);
       }
     } catch (err) {
       console.error('Failed to update order:', err);
-      alert('Failed to update order. Please try again.');
+      setNotification({ type: 'error', message: 'Failed to update order. Please try again.' });
+      setTimeout(() => setNotification(null), 5000);
     }
   };
 
   return (
     <div style={{ padding: 'clamp(12px, 3vw, 20px)' }}>
+      {/* Notification Toast */}
+      {notification && (
+        <div style={{
+          position: 'fixed',
+          top: 20,
+          right: 20,
+          padding: 16,
+          borderRadius: 8,
+          background: notification.type === 'success' ? '#4CAF50' : '#f44336',
+          color: 'white',
+          zIndex: 1000,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          animation: 'slideIn 0.3s ease-out'
+        }}>
+          {notification.message}
+        </div>
+      )}
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
         <h1 style={{ margin: 0, fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>Partner Dashboard</h1>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
