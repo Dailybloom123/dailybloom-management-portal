@@ -1,16 +1,16 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import enTranslations from './i18n/locales.json';
+import enTranslations from './i18n/locales.json?raw';
 
 const resources = {
   en: {
-    translation: enTranslations.en.translation,
+    translation: JSON.parse(enTranslations).en.translation,
   },
   hi: {
-    translation: enTranslations.hi.translation,
+    translation: JSON.parse(enTranslations).hi.translation,
   },
   as: {
-    translation: enTranslations.as.translation,
+    translation: JSON.parse(enTranslations).as.translation,
   },
 };
 

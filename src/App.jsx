@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './i18n'; // Initialize i18next
 import { useTranslation } from 'react-i18next';
+import AuthSessionManager from './utils/AuthSessionManager';
 
 const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:4000/api'
@@ -28,9 +29,13 @@ function App() {
     if (adminToken) {
       const adminUser = JSON.parse(localStorage.getItem('dailybloom_admin_user') || '{}');
       setUser({ ...adminUser, role: 'admin', token: adminToken });
+      // Setup auto-refresh for admin
+      AuthSessionManager.setupAutoRefresh('admin');
     } else if (partnerToken) {
       const partnerUser = JSON.parse(localStorage.getItem('dailybloom_partner_user') || '{}');
       setUser({ ...partnerUser, role: 'partner', token: partnerToken });
+      // Setup auto-refresh for partner
+      AuthSessionManager.setupAutoRefresh('partner');
     }
 
     setLoading(false);
@@ -120,11 +125,15 @@ function LoginPage({ setUser, setError, error }) {
       if (loginType === 'admin') {
         localStorage.setItem('dailybloom_admin_token', data.token);
         localStorage.setItem('dailybloom_admin_user', JSON.stringify(data.user));
+        AuthSessionManager.setToken(data.token, data.expiresIn || 604800, 'admin'); // 7 days default
         setUser({ ...data.user, role: 'admin', token: data.token });
+        AuthSessionManager.setupAutoRefresh('admin');
       } else {
         localStorage.setItem('dailybloom_partner_token', data.token);
         localStorage.setItem('dailybloom_partner_user', JSON.stringify(data.user));
+        AuthSessionManager.setToken(data.token, data.expiresIn || 604800, 'partner'); // 7 days default
         setUser({ ...data.user, role: 'partner', token: data.token });
+        AuthSessionManager.setupAutoRefresh('partner');
       }
     } catch (err) {
       setError(err.message);
@@ -250,6 +259,8 @@ function AdminDashboard({ user, onLogout }) {
     adjustment_type: 'credit',
     reason: ''
   });
+
+  const isMobile = window.innerWidth <= 768;
 
   useEffect(() => {
     if (activeTab === 'orders') fetchOrders();

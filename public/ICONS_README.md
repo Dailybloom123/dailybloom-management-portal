@@ -1,33 +1,35 @@
-# PWA Icons Required
+# PWA Icons
 
-This folder needs the following icon files for the Progressive Web App to work properly:
+Icons have been added as SVG files:
+- `icon-192.svg` - 192x192 pixels (for Android)
+- `icon-512.svg` - 512x512 pixels (for iOS)
 
-## Required Icons:
+These are simple green squares with "DB" text as placeholders.
 
-1. **icon-192.png** - 192x192 pixels (for Android)
-2. **icon-512.png** - 512x512 pixels (for iOS)
+## For Production:
 
-## How to Create Icons:
+For a more professional look, you should:
 
-### Option 1: Use Online Tool
-1. Go to https://realfavicongenerator.net/
-2. Upload your logo (PNG, SVG, or JPG)
-3. Select "Android" and "iOS"
-4. Download the generated icons
-5. Place `icon-192.png` and `icon-512.png` in this folder
+1. **Create branded icons** using your actual logo:
+   - Go to https://realfavicongenerator.net/
+   - Upload your DailyBloom logo
+   - Select "Android" and "iOS"
+   - Download the generated icons
+   - Replace the SVG files with PNG versions
 
-### Option 2: Create Simple Icons
-For now, you can use a simple green circle with "DB" text:
-- Create a 512x512 PNG with green background (#4CAF50)
-- Add white "DB" text in the center
-- Resize to 192x192 for the smaller icon
+2. **Or use an online SVG to PNG converter**:
+   - Go to https://cloudconvert.com/svg-to-png
+   - Convert `icon-192.svg` to `icon-192.png`
+   - Convert `icon-512.svg` to `icon-512.png`
+   - Update `manifest.json` to reference PNG files instead of SVG
 
-### Option 3: Use Placeholder (Temporary)
-Use any image as a placeholder and rename it to:
-- `icon-192.png`
-- `icon-512.png`
+## Current Status:
+- ✅ Icons added (SVG format)
+- ✅ Manifest configured
+- ✅ PWA ready for testing
+- ⚠️ Icons are placeholders (upgrade for production)
 
-## Important:
-- Icons must be in PNG format
-- Square dimensions (192x192, 512x512)
-- Transparent background recommended for better appearance
+## Testing PWA:
+1. Open https://dailybloom-management-portal.onrender.com on mobile Chrome/Safari
+2. Tap menu → "Add to Home Screen"
+3. The app should appear on your home screen with the DB icon

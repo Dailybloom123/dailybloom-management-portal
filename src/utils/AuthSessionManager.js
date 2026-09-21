@@ -7,7 +7,7 @@ export class AuthSessionManager {
   /**
    * Store auth token with expiration
    */
-  static setToken(token: string, expiresIn: number, role: 'admin' | 'partner') {
+  static setToken(token, expiresIn, role) {
     const tokenKey = role === 'admin' ? 'dailybloom_admin_token' : 'dailybloom_partner_token';
     const expiresAt = Date.now() + (expiresIn * 1000); // Convert to milliseconds
     
@@ -26,7 +26,7 @@ export class AuthSessionManager {
   /**
    * Get valid token (auto-refresh if expired)
    */
-  static async getToken(role: 'admin' | 'partner'): Promise<string | null> {
+  static async getToken(role) {
     const tokenKey = role === 'admin' ? 'dailybloom_admin_token' : 'dailybloom_partner_token';
     
     try {
@@ -52,7 +52,7 @@ export class AuthSessionManager {
   /**
    * Refresh token with backend
    */
-  static async refreshToken(role: 'admin' | 'partner'): Promise<string | null> {
+  static async refreshToken(role) {
     const userKey = role === 'admin' ? 'dailybloom_admin_user' : 'dailybloom_partner_user';
     const userStr = localStorage.getItem(userKey);
     
@@ -97,7 +97,7 @@ export class AuthSessionManager {
   /**
    * Clear session (logout)
    */
-  static clearSession(role: 'admin' | 'partner') {
+  static clearSession(role) {
     const tokenKey = role === 'admin' ? 'dailybloom_admin_token' : 'dailybloom_partner_token';
     const userKey = role === 'admin' ? 'dailybloom_admin_user' : 'dailybloom_partner_user';
     
@@ -108,7 +108,7 @@ export class AuthSessionManager {
   /**
    * Check if session is valid
    */
-  static isSessionValid(role: 'admin' | 'partner'): boolean {
+  static isSessionValid(role) {
     const tokenKey = role === 'admin' ? 'dailybloom_admin_token' : 'dailybloom_partner_token';
     
     try {
@@ -125,7 +125,7 @@ export class AuthSessionManager {
   /**
    * Get user data
    */
-  static getUser(role: 'admin' | 'partner') {
+  static getUser(role) {
     const userKey = role === 'admin' ? 'dailybloom_admin_user' : 'dailybloom_partner_user';
     const userStr = localStorage.getItem(userKey);
     
@@ -141,7 +141,7 @@ export class AuthSessionManager {
   /**
    * Auto-refresh token before expiry (call this periodically)
    */
-  static async autoRefreshIfNeeded(role: 'admin' | 'partner'): Promise<boolean> {
+  static async autoRefreshIfNeeded(role) {
     const tokenKey = role === 'admin' ? 'dailybloom_admin_token' : 'dailybloom_partner_token';
     
     try {
@@ -167,7 +167,7 @@ export class AuthSessionManager {
   /**
    * Setup periodic token refresh (call on app initialization)
    */
-  static setupAutoRefresh(role: 'admin' | 'partner') {
+  static setupAutoRefresh(role) {
     // Refresh every 30 minutes
     setInterval(() => {
       this.autoRefreshIfNeeded(role);
