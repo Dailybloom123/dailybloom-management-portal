@@ -728,10 +728,66 @@ function AdminDashboard({ user, onLogout }) {
                   <div style={{ marginBottom: 8 }}>Status: <strong>{order.status}</strong></div>
                   <div style={{ marginBottom: 8 }}>Total: ₹{order.total}</div>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    <button onClick={() => updateOrderStatus(order.id, 'confirmed')} style={{ padding: '6px 12px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Confirm</button>
-                    <button onClick={() => updateOrderStatus(order.id, 'in_progress')} style={{ padding: '6px 12px', background: '#2196F3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>In Progress</button>
-                    <button onClick={() => updateOrderStatus(order.id, 'delivered')} style={{ padding: '6px 12px', background: '#FF9800', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Delivered</button>
-                    <button onClick={() => updateOrderStatus(order.id, 'cancelled')} style={{ padding: '6px 12px', background: '#f44336', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Cancel</button>
+                    <button 
+                      onClick={() => updateOrderStatus(order.id, 'confirmed')} 
+                      disabled={order.status === 'confirmed'}
+                      style={{ 
+                        padding: '6px 12px', 
+                        background: order.status === 'confirmed' ? '#2E7D32' : '#4CAF50', 
+                        color: 'white', 
+                        border: order.status === 'confirmed' ? '2px solid #1B5E20' : 'none',
+                        borderRadius: 4, 
+                        cursor: order.status === 'confirmed' ? 'not-allowed' : 'pointer',
+                        opacity: order.status === 'confirmed' ? 0.8 : 1
+                      }}
+                    >
+                      Confirm
+                    </button>
+                    <button 
+                      onClick={() => updateOrderStatus(order.id, 'in_progress')} 
+                      disabled={order.status === 'in_progress'}
+                      style={{ 
+                        padding: '6px 12px', 
+                        background: order.status === 'in_progress' ? '#1565C0' : '#2196F3', 
+                        color: 'white', 
+                        border: order.status === 'in_progress' ? '2px solid #0D47A1' : 'none',
+                        borderRadius: 4, 
+                        cursor: order.status === 'in_progress' ? 'not-allowed' : 'pointer',
+                        opacity: order.status === 'in_progress' ? 0.8 : 1
+                      }}
+                    >
+                      In Progress
+                    </button>
+                    <button 
+                      onClick={() => updateOrderStatus(order.id, 'delivered')} 
+                      disabled={order.status === 'delivered'}
+                      style={{ 
+                        padding: '6px 12px', 
+                        background: order.status === 'delivered' ? '#E65100' : '#FF9800', 
+                        color: 'white', 
+                        border: order.status === 'delivered' ? '2px solid '#BF360C' : 'none',
+                        borderRadius: 4, 
+                        cursor: order.status === 'delivered' ? 'not-allowed' : 'pointer',
+                        opacity: order.status === 'delivered' ? 0.8 : 1
+                      }}
+                    >
+                      Delivered
+                    </button>
+                    <button 
+                      onClick={() => updateOrderStatus(order.id, 'cancelled')} 
+                      disabled={order.status === 'cancelled'}
+                      style={{ 
+                        padding: '6px 12px', 
+                        background: order.status === 'cancelled' ? '#C62828' : '#f44336', 
+                        color: 'white', 
+                        border: order.status === 'cancelled' ? '2px solid '#8E0000' : 'none',
+                        borderRadius: 4, 
+                        cursor: order.status === 'cancelled' ? 'not-allowed' : 'pointer',
+                        opacity: order.status === 'cancelled' ? 0.8 : 1
+                      }}
+                    >
+                      Cancel
+                    </button>
                   </div>
                 </div>
               ))}
@@ -1598,9 +1654,51 @@ function PartnerDashboard({ user, onLogout }) {
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <button onClick={() => acceptOrder(order.id)} style={{ padding: '6px 12px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Accept Order</button>
                     <button onClick={() => rejectOrder(order.id, 'Stock not available')} style={{ padding: '6px 12px', background: '#f44336', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Reject Order</button>
-                    <button onClick={() => updateOrderStatus(order.id, 'packed')} style={{ padding: '6px 12px', background: '#2196F3', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Packed</button>
-                    <button onClick={() => updateOrderStatus(order.id, 'out_for_delivery')} style={{ padding: '6px 12px', background: '#FF9800', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Out for Delivery</button>
-                    <button onClick={() => updateOrderStatus(order.id, 'delivered')} style={{ padding: '6px 12px', background: '#4CAF50', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}>Delivered</button>
+                    <button 
+                      onClick={() => updateOrderStatus(order.id, 'packed')} 
+                      disabled={order.status === 'packed'}
+                      style={{ 
+                        padding: '6px 12px', 
+                        background: order.status === 'packed' ? '#1565C0' : '#2196F3', 
+                        color: 'white', 
+                        border: order.status === 'packed' ? '2px solid #0D47A1' : 'none',
+                        borderRadius: 4, 
+                        cursor: order.status === 'packed' ? 'not-allowed' : 'pointer',
+                        opacity: order.status === 'packed' ? 0.8 : 1
+                      }}
+                    >
+                      Packed
+                    </button>
+                    <button 
+                      onClick={() => updateOrderStatus(order.id, 'out_for_delivery')} 
+                      disabled={order.status === 'out_for_delivery'}
+                      style={{ 
+                        padding: '6px 12px', 
+                        background: order.status === 'out_for_delivery' ? '#E65100' : '#FF9800', 
+                        color: 'white', 
+                        border: order.status === 'out_for_delivery' ? '2px solid '#BF360C' : 'none',
+                        borderRadius: 4, 
+                        cursor: order.status === 'out_for_delivery' ? 'not-allowed' : 'pointer',
+                        opacity: order.status === 'out_for_delivery' ? 0.8 : 1
+                      }}
+                    >
+                      Out for Delivery
+                    </button>
+                    <button 
+                      onClick={() => updateOrderStatus(order.id, 'delivered')} 
+                      disabled={order.status === 'delivered'}
+                      style={{ 
+                        padding: '6px 12px', 
+                        background: order.status === 'delivered' ? '#2E7D32' : '#4CAF50', 
+                        color: 'white', 
+                        border: order.status === 'delivered' ? '2px solid #1B5E20' : 'none',
+                        borderRadius: 4, 
+                        cursor: order.status === 'delivered' ? 'not-allowed' : 'pointer',
+                        opacity: order.status === 'delivered' ? 0.8 : 1
+                      }}
+                    >
+                      Delivered
+                    </button>
                   </div>
                 </div>
               ))}
