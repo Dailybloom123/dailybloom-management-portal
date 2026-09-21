@@ -501,10 +501,15 @@ function AdminDashboard({ user, onLogout }) {
         body: JSON.stringify({ status })
       });
       if (res.ok) {
+        alert(`Order status updated to ${status}`);
         fetchOrders();
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        alert(`Failed to update order: ${errorData.error || res.statusText}`);
       }
     } catch (err) {
       console.error('Failed to update order:', err);
+      alert('Failed to update order. Please try again.');
     }
   };
 
@@ -1420,10 +1425,15 @@ function PartnerDashboard({ user, onLogout }) {
         body: JSON.stringify({ status })
       });
       if (res.ok) {
+        alert(`Order status updated to ${status}`);
         fetchOrders();
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        alert(`Failed to update order: ${errorData.error || res.statusText}`);
       }
     } catch (err) {
       console.error('Failed to update order:', err);
+      alert('Failed to update order. Please try again.');
     }
   };
 
