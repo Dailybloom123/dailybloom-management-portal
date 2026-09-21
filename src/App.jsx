@@ -42,10 +42,8 @@ function App() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('dailybloom_admin_token');
-    localStorage.removeItem('dailybloom_admin_user');
-    localStorage.removeItem('dailybloom_partner_token');
-    localStorage.removeItem('dailybloom_partner_user');
+    AuthSessionManager.clearSession('admin');
+    AuthSessionManager.clearSession('partner');
     setUser(null);
   };
 
@@ -585,12 +583,12 @@ function AdminDashboard({ user, onLogout }) {
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h1 style={{ margin: 0 }}>Management Dashboard</h1>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={() => setShowChangePassword(true)} style={{ padding: '8px 16px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Change Password</button>
-          <button onClick={onLogout} style={{ padding: '8px 16px', background: '#333', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Logout</button>
+    <div style={{ padding: 'clamp(12px, 3vw, 20px)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
+        <h1 style={{ margin: 0, fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>Management Dashboard</h1>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button onClick={() => setShowChangePassword(true)} style={{ padding: '8px 12px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Change Password</button>
+          <button onClick={onLogout} style={{ padding: '8px 12px', background: '#333', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Logout</button>
         </div>
       </div>
 
@@ -1430,12 +1428,12 @@ function PartnerDashboard({ user, onLogout }) {
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <h1 style={{ margin: 0 }}>Partner Dashboard</h1>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={() => setShowChangePassword(true)} style={{ padding: '8px 16px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}>Change Password</button>
-          <button onClick={onLogout} style={{ padding: '8px 16px', background: '#333', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Logout</button>
+    <div style={{ padding: 'clamp(12px, 3vw, 20px)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
+        <h1 style={{ margin: 0, fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>Partner Dashboard</h1>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button onClick={() => setShowChangePassword(true)} style={{ padding: '8px 12px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Change Password</button>
+          <button onClick={onLogout} style={{ padding: '8px 12px', background: '#333', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Logout</button>
         </div>
       </div>
 

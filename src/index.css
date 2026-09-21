@@ -55,3 +55,18 @@ body {
     padding-right: max(0px, env(safe-area-inset-right));
   }
 }
+
+/* Ensure header buttons are always visible on small screens */
+@media (max-width: 480px) {
+  button {
+    font-size: 0.85rem !important;
+    padding: 6px 10px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  button {
+    font-size: 0.8rem !important;
+    padding: 6px 8px !important;
+  }
+}
