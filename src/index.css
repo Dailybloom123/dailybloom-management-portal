@@ -10,8 +10,48 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Mobile optimizations */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 #root {
   min-height: 100vh;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px;
+  }
+  
+  /* Touch-friendly buttons */
+  button, a, select, input {
+    min-height: 44px; /* iOS touch target minimum */
+    min-width: 44px;
+  }
+  
+  /* Prevent zoom on double-tap */
+  button, input, select, textarea {
+    touch-action: manipulation;
+  }
+  
+  /* Better text selection on mobile */
+  * {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
+
+/* Mobile-safe scrolling */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safe area for notched phones */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
 }
