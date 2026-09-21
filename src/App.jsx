@@ -765,7 +765,7 @@ function AdminDashboard({ user, onLogout }) {
                         padding: '6px 12px', 
                         background: order.status === 'delivered' ? '#E65100' : '#FF9800', 
                         color: 'white', 
-                        border: order.status === 'delivered' ? '2px solid '#BF360C' : 'none',
+                        border: order.status === 'delivered' ? "2px solid #BF360C" : 'none',
                         borderRadius: 4, 
                         cursor: order.status === 'delivered' ? 'not-allowed' : 'pointer',
                         opacity: order.status === 'delivered' ? 0.8 : 1
@@ -780,7 +780,7 @@ function AdminDashboard({ user, onLogout }) {
                         padding: '6px 12px', 
                         background: order.status === 'cancelled' ? '#C62828' : '#f44336', 
                         color: 'white', 
-                        border: order.status === 'cancelled' ? '2px solid '#8E0000' : 'none',
+                        border: order.status === 'cancelled' ? "2px solid #8E0000" : 'none',
                         borderRadius: 4, 
                         cursor: order.status === 'cancelled' ? 'not-allowed' : 'pointer',
                         opacity: order.status === 'cancelled' ? 0.8 : 1
@@ -1676,7 +1676,7 @@ function PartnerDashboard({ user, onLogout }) {
                         padding: '6px 12px', 
                         background: order.status === 'out_for_delivery' ? '#E65100' : '#FF9800', 
                         color: 'white', 
-                        border: order.status === 'out_for_delivery' ? '2px solid '#BF360C' : 'none',
+                        border: order.status === 'out_for_delivery' ? "2px solid #BF360C" : 'none',
                         borderRadius: 4, 
                         cursor: order.status === 'out_for_delivery' ? 'not-allowed' : 'pointer',
                         opacity: order.status === 'out_for_delivery' ? 0.8 : 1
