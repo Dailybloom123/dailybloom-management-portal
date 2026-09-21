@@ -3,5 +3,5 @@ services:
     name: dailybloom-management-portal
     env: node
     buildCommand: npm install && npm run build
-    startCommand: npm run start
+    startCommand: node server.js
     staticPublishPath: ./dist
