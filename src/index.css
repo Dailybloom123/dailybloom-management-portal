@@ -53,7 +53,15 @@ body {
   body {
     padding-left: max(0px, env(safe-area-inset-left));
     padding-right: max(0px, env(safe-area-inset-right));
+    padding-top: max(0px, env(safe-area-inset-top));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
   }
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh; /* Use dynamic viewport height for mobile */
+  padding-bottom: max(0px, env(safe-area-inset-bottom));
 }
 
 /* Ensure header buttons are always visible on small screens */
