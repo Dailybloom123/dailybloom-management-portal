@@ -54,41 +54,6 @@ function App() {
   return (
     <Router>
       <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-        {/* Language Selector - Mobile Optimized */}
-        <div style={{ 
-          position: 'fixed', 
-          top: 10, 
-          right: 10, 
-          zIndex: 1000, 
-          background: 'white', 
-          padding: '8px', 
-          borderRadius: '8px', 
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          '@media (max-width: 768px)': {
-            top: 'auto',
-            bottom: 10,
-            right: 10,
-            left: 10,
-            textAlign: 'center'
-          }
-        }}>
-          <select 
-            value={currentLang} 
-            onChange={(e) => changeLanguage(e.target.value)}
-            style={{ 
-              padding: '8px 12px', 
-              borderRadius: '6px', 
-              border: '1px solid #ddd',
-              fontSize: '14px',
-              width: '100%',
-              maxWidth: '200px'
-            }}
-          >
-            <option value="en">English</option>
-            <option value="hi">हिंदी</option>
-            <option value="as">অসমীয়া</option>
-          </select>
-        </div>
         <Routes>
           <Route path="/" element={user ? <Navigate to={`/${user.role}`} /> : <LoginPage setUser={setUser} setError={setError} error={error} />} />
           <Route path="/admin" element={user?.role === 'admin' ? <AdminDashboard user={user} onLogout={handleLogout} /> : <Navigate to="/" />} />
