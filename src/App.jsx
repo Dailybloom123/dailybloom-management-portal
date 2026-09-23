@@ -576,7 +576,7 @@ function AdminDashboard({ user, onLogout }) {
         </div>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16, position: 'relative', zIndex: 10 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16, position: 'relative', zIndex: 1001 }}>
         <h1 style={{ margin: 0, fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>Management Dashboard</h1>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           <button onClick={() => setShowChangePassword(true)} style={{ padding: '8px 12px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Change Password</button>
@@ -1504,7 +1504,7 @@ function PartnerDashboard({ user, onLogout }) {
         </div>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16, position: 'relative', zIndex: 10 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16, position: 'relative', zIndex: 1001 }}>
         <h1 style={{ margin: 0, fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>Partner Dashboard</h1>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           <button onClick={() => setShowChangePassword(true)} style={{ padding: '8px 12px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Change Password</button>
