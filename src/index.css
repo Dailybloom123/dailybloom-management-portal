@@ -25,10 +25,11 @@ body {
     font-size: 16px;
   }
   
-  /* Touch-friendly buttons */
+  /* Touch-friendly buttons - WCAG 2.1 AA minimum */
   button, a, select, input {
-    min-height: 44px; /* iOS touch target minimum */
-    min-width: 44px;
+    min-height: 48px;
+    min-width: 48px;
+    font-size: 16px; /* Prevent iOS zoom on focus */
   }
   
   /* Prevent zoom on double-tap */
@@ -40,6 +41,11 @@ body {
   * {
     -webkit-user-select: text;
     user-select: text;
+  }
+  
+  /* Ensure buttons have proper padding */
+  button {
+    padding: 12px 16px;
   }
 }
 

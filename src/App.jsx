@@ -579,8 +579,8 @@ function AdminDashboard({ user, onLogout }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16, position: 'relative', zIndex: 1001 }}>
         <h1 style={{ margin: 0, fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>DailyBloom — नवोदयः — Management Dashboard</h1>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <button onClick={() => setShowChangePassword(true)} style={{ padding: '8px 12px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Change Password</button>
-          <button onClick={onLogout} style={{ padding: '8px 12px', background: '#333', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Logout</button>
+          <button onClick={() => setShowChangePassword(true)} style={{ padding: '12px 16px', minHeight: '48px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Change Password</button>
+          <button onClick={onLogout} style={{ padding: '12px 16px', minHeight: '48px', background: '#333', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Logout</button>
         </div>
       </div>
 
@@ -697,7 +697,8 @@ function AdminDashboard({ user, onLogout }) {
                       onClick={() => updateOrderStatus(order.id, 'confirmed')} 
                       disabled={order.status === 'confirmed'}
                       style={{ 
-                        padding: '6px 12px', 
+                        padding: '12px 16px', 
+                        minHeight: '48px', 
                         background: order.status === 'confirmed' ? '#2E7D32' : '#4CAF50', 
                         color: 'white', 
                         border: order.status === 'confirmed' ? '2px solid #1B5E20' : 'none',
@@ -712,7 +713,8 @@ function AdminDashboard({ user, onLogout }) {
                       onClick={() => updateOrderStatus(order.id, 'in_progress')} 
                       disabled={order.status === 'in_progress'}
                       style={{ 
-                        padding: '6px 12px', 
+                        padding: '12px 16px', 
+                        minHeight: '48px', 
                         background: order.status === 'in_progress' ? '#1565C0' : '#2196F3', 
                         color: 'white', 
                         border: order.status === 'in_progress' ? '2px solid #0D47A1' : 'none',
@@ -727,7 +729,8 @@ function AdminDashboard({ user, onLogout }) {
                       onClick={() => updateOrderStatus(order.id, 'delivered')} 
                       disabled={order.status === 'delivered'}
                       style={{ 
-                        padding: '6px 12px', 
+                        padding: '12px 16px', 
+                        minHeight: '48px', 
                         background: order.status === 'delivered' ? '#E65100' : '#FF9800', 
                         color: 'white', 
                         border: order.status === 'delivered' ? "2px solid #BF360C" : 'none',
@@ -742,7 +745,8 @@ function AdminDashboard({ user, onLogout }) {
                       onClick={() => updateOrderStatus(order.id, 'cancelled')} 
                       disabled={order.status === 'cancelled'}
                       style={{ 
-                        padding: '6px 12px', 
+                        padding: '12px 16px', 
+                        minHeight: '48px', 
                         background: order.status === 'cancelled' ? '#C62828' : '#f44336', 
                         color: 'white', 
                         border: order.status === 'cancelled' ? "2px solid #8E0000" : 'none',
@@ -1507,8 +1511,8 @@ function PartnerDashboard({ user, onLogout }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16, position: 'relative', zIndex: 1001 }}>
         <h1 style={{ margin: 0, fontSize: 'clamp(1.2rem, 4vw, 1.5rem)' }}>DailyBloom — नवोदयः — Partner Dashboard</h1>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <button onClick={() => setShowChangePassword(true)} style={{ padding: '8px 12px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Change Password</button>
-          <button onClick={onLogout} style={{ padding: '8px 12px', background: '#333', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Logout</button>
+          <button onClick={() => setShowChangePassword(true)} style={{ padding: '12px 16px', minHeight: '48px', background: '#f5f5f5', color: '#333', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Change Password</button>
+          <button onClick={onLogout} style={{ padding: '12px 16px', minHeight: '48px', background: '#333', color: 'white', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Logout</button>
         </div>
       </div>
 
@@ -1623,7 +1627,8 @@ function PartnerDashboard({ user, onLogout }) {
                       onClick={() => updateOrderStatus(order.id, 'packed')} 
                       disabled={order.status === 'packed'}
                       style={{ 
-                        padding: '6px 12px', 
+                        padding: '12px 16px', 
+                        minHeight: '48px', 
                         background: order.status === 'packed' ? '#1565C0' : '#2196F3', 
                         color: 'white', 
                         border: order.status === 'packed' ? '2px solid #0D47A1' : 'none',
@@ -1638,7 +1643,8 @@ function PartnerDashboard({ user, onLogout }) {
                       onClick={() => updateOrderStatus(order.id, 'out_for_delivery')} 
                       disabled={order.status === 'out_for_delivery'}
                       style={{ 
-                        padding: '6px 12px', 
+                        padding: '12px 16px', 
+                        minHeight: '48px', 
                         background: order.status === 'out_for_delivery' ? '#E65100' : '#FF9800', 
                         color: 'white', 
                         border: order.status === 'out_for_delivery' ? "2px solid #BF360C" : 'none',
@@ -1653,7 +1659,8 @@ function PartnerDashboard({ user, onLogout }) {
                       onClick={() => updateOrderStatus(order.id, 'delivered')} 
                       disabled={order.status === 'delivered'}
                       style={{ 
-                        padding: '6px 12px', 
+                        padding: '12px 16px', 
+                        minHeight: '48px', 
                         background: order.status === 'delivered' ? '#2E7D32' : '#4CAF50', 
                         color: 'white', 
                         border: order.status === 'delivered' ? '2px solid #1B5E20' : 'none',
@@ -1689,7 +1696,8 @@ function PartnerDashboard({ user, onLogout }) {
                     <button
                       onClick={() => toggleProductAvailability(product.id)}
                       style={{
-                        padding: '6px 12px',
+                        padding: '12px 16px', 
+                        minHeight: '48px',
                         background: product.is_active ? '#4CAF50' : '#f44336',
                         color: 'white',
                         border: 'none',
